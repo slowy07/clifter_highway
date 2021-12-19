@@ -5,22 +5,24 @@
 ![pytorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=PyTorch&logoColor=white)
 [![sponsor_button](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white)](https://saweria.co/slowy07)
 
+Autonomous driving decision making tasks and environments
 
-environment decision making in autonomous driving
+</br>
 
-**test online**
+## Try it online!
 
 [![google_colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/drive/1owsJCTwjg92_2J0WDE-f-s_8jNvN9lgb?usp=sharing)
 
 ![multiagent_intersection](documentation/output_dat/intersection_multi_agent.gif)
 
+</br>
 
-## environment
+## Environments
 
-**highway**
+**Highway**
 
 
-in this task, the ego vehicle is driving in multilane highway populated with other vehicle. the agent's objective is to reach high speed whole avoiding collision with neighbouring vehicles. driving on the right side of the road is also rewarded
+In this task, the ego vehicle is driving in multilane highway populated with other vehicles. The agent's objective is to drive in high speed on the right side on the road while avoiding collision with other vehicles.
 ```python
 environ = gym.make("highway-v0")
 ```
@@ -28,10 +30,10 @@ environ = gym.make("highway-v0")
 ![ebv1](output/highway.gif)
 
 
-**merge**
+**Merge**
 
 
-in this task, the ego vehicle starts on a main highway but soon approaches a road junction with incoming vehicles on the access ramp. the agent's objectiove is now to maintain a higha speed while making room for the vehicles so that the can safety merge in the traffic.
+In this task, the ego vehicle approaches a junction with incoming vehicles on the access ramp. The agent's objective is now to maintain a high speed while leaving some space for other vehicles so that the ego vehicle can safely merge in the traffic.
 
 ```python
 environ = gym.make("merge-v0)
@@ -39,10 +41,10 @@ environ = gym.make("merge-v0)
 
 ![mergeenv1](output/merge-env.gif)
 
-**roundabout**
+**Roundabout**
 
 
-in this task, the ego vehicle if approaching a rounadbout with flowing traffic. ot follow its planned route automatically, but hash to handle lane changes and longitudinal control to pass the roundabout as fast as possible while avoiding collisions.
+In this task, the ego vehicle approaches a rounadbout with flowing traffic. It follows its planned route automatically, but also has to handle lane changes and longitudinal control to pass the roundabout as fast as possible while avoiding collisions.
 
 
 ```python
@@ -51,9 +53,9 @@ environ = gym.make("roundabout-v0")
 ![roundaboutenv1](output/roundabout-env.gif)
 
 
-**parking**
+**Parking**
 
-a goal conditioned continuous control task in which the ego vehicle must pak in a given space with the appropriate heading.
+A goal-conditioned continuous control task in which the ego-vehicle must park in a given space with the appropriate heading.
 
 ```python
 environ = gym.make("parking-v0")
@@ -62,50 +64,54 @@ environ = gym.make("parking-v0")
 ![parkingenv1](output/parking-env.gif)
 
 
-**intersection**
+**Intersection**
 
-intersection negotation task with dense traffic
+Providing an intersection negotiation task with dense traffic for the ego vehicle.
 
 ![intersectionenv1](output/intersection-env.gif)
 
 
-**racetrack**
+**Racetrack**
 
-a continuous control task involving lane-keeping and obstacle avoidance
+A continuous control task involving lane-keeping and obstacle avoidance
 
 ![racetrackenv1](output/racetrack-env.gif)
 
+</br>
 
-## example agents
+## Example agents
 
-**deep q network**
+**Deep Q-Network**
 
 ![dqnenv1](output/dqn.gif)
 
-this model-free value-based reinforcement learning agent performs Q-learning with function approximation, using a neural network to represent the state-action value function Q.
+This model-free value-based reinforcement learning agent performs Q-learning with function approximation, using a neural network to represent the state-action value function Q.
 
-**deep deteministic policy gradient**
+**Deep Deterministic Policy Gradient**
 
 ![ddpgenv1](output/ddpg.gif)
-this model-free policy-base reinforcemetn learning agent is optimized directly by gradient ascent. it uses hindsight experience replay to efficiently learn how to solve a goal-conditional taks.
+
+This model-free policy-based reinforcement learning agent is optimized directly by gradient ascent. It uses Hindsight Experience Replay to efficiently learn how to solve a goal-conditioned task.
 
 ![deepfastdqnenv2](documentation/output_dat/highway_fast_dqn.gif)
 
-**value iteration**
+**value Iteration**
 
 ![ttcvi](output/ttcvi.gif)
-the value iteration is only compatible with finite discrete MDPs, this simplified state representation describe the nearby traffic in terms of predicted time-to-collision on each lane of the road.the transition model is simplistic and assumes that each behicle will keep driving at a constan speed without changing the lines. this model bias can be source of mistakes.
 
-the agent then performs a value iteration to computer the corresponding optimal state-value function.
+The Value Iteration is only compatible with finite discrete MDPs, so the environment is first approximated by a finite-mdp environment using env.to_finite_mdp(). This simplified state representation describes the nearby traffic in terms of predicted Time-To-Collision (TTC) on each lane of the road. The transition model is simplistic and assumes that each vehicle will keep driving at a constant speed without changing lanes. This model bias can be a source of mistakes.
 
-**monte carlo tree search**
+The agent then performs a Value Iteration to compute the corresponding optimal state-value function.
 
-the agents leverages a transition and reward models to perform a stochastic tree seach of the optimal trajectory. no particular assumption is required on state representation or transition model.
+**Monte-Carlo Tree Search**
+
+This agent leverages a transition and reward models to perform a stochastic tree search (Coulom, 2006) of the optimal trajectory. No particular assumption is required on the state representation or transition model.
 
 ![montelcarolenv](output/mcts.gif)
 
+</br>
 
-more information:
+_More information:_
 - [observation](documentation/observation.md)
 - [actions](documentation/actions.md)
 - [rewards](documentation/rewards.md)
