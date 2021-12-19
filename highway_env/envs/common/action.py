@@ -18,7 +18,7 @@ class ActionType(object):
 
     """A type of action specifies its definition space, and how actions are executed in the environment"""
 
-    def __init__(self, env: 'AbstractEnv', **kwargs) -> None:
+    def __init__(self, env: "AbstractEnv", **kwargs) -> None:
         self.env = env
         self.__controlled_vehicle = None
 
@@ -75,15 +75,17 @@ class ContinuousAction(ActionType):
     STEERING_RANGE = (-np.pi / 4, np.pi / 4)
     """Steering angle range: [-x, x], in rad."""
 
-    def __init__(self,
-                 env: 'AbstractEnv',
-                 acceleration_range: Optional[Tuple[float, float]] = None,
-                 steering_range: Optional[Tuple[float, float]] = None,
-                 longitudinal: bool = True,
-                 lateral: bool = True,
-                 dynamical: bool = False,
-                 clip: bool = True,
-                 **kwargs) -> None:
+    def __init__(
+        self,
+        env: "AbstractEnv",
+        acceleration_range: Optional[Tuple[float, float]] = None,
+        steering_range: Optional[Tuple[float, float]] = None,
+        longitudinal: bool = True,
+        lateral: bool = True,
+        dynamical: bool = False,
+        clip: bool = True,
+        **kwargs
+    ) -> None:
         """
         Create a continuous action space.
 
@@ -96,19 +98,23 @@ class ContinuousAction(ActionType):
         :param clip: clip action to the defined range
         """
         super().__init__(env)
-        self.acceleration_range = acceleration_range if acceleration_range else self.ACCELERATION_RANGE
+        self.acceleration_range = (
+            acceleration_range if acceleration_range else self.ACCELERATION_RANGE
+        )
         self.steering_range = steering_range if steering_range else self.STEERING_RANGE
         self.lateral = lateral
         self.longitudinal = longitudinal
         if not self.lateral and not self.longitudinal:
-            raise ValueError("Either longitudinal and/or lateral control must be enabled")
+            raise ValueError(
+                "Either longitudinal and/or lateral control must be enabled"
+            )
         self.dynamical = dynamical
         self.clip = clip
         self.size = 2 if self.lateral and self.longitudinal else 1
         self.last_action = np.zeros(self.size)
 
     def space(self) -> spaces.Box:
-        return spaces.Box(-1., 1., shape=(self.size,), dtype=np.float32)
+        return spaces.Box(-1.0, 1.0, shape=(self.size,), dtype=np.float32)
 
     @property
     def vehicle_class(self) -> Callable:
@@ -118,40 +124,59 @@ class ContinuousAction(ActionType):
         if self.clip:
             action = np.clip(action, -1, 1)
         if self.longitudinal and self.lateral:
-            self.controlled_vehicle.act({
-                "acceleration": utils.lmap(action[0], [-1, 1], self.acceleration_range),
-                "steering": utils.lmap(action[1], [-1, 1], self.steering_range),
-            })
+            self.controlled_vehicle.act(
+                {
+                    "acceleration": utils.lmap(
+                        action[0], [-1, 1], self.acceleration_range
+                    ),
+                    "steering": utils.lmap(action[1], [-1, 1], self.steering_range),
+                }
+            )
         elif self.longitudinal:
-            self.controlled_vehicle.act({
-                "acceleration": utils.lmap(action[0], [-1, 1], self.acceleration_range),
-                "steering": 0,
-            })
+            self.controlled_vehicle.act(
+                {
+                    "acceleration": utils.lmap(
+                        action[0], [-1, 1], self.acceleration_range
+                    ),
+                    "steering": 0,
+                }
+            )
         elif self.lateral:
-            self.controlled_vehicle.act({
-                "acceleration": 0,
-                "steering": utils.lmap(action[0], [-1, 1], self.steering_range)
-            })
+            self.controlled_vehicle.act(
+                {
+                    "acceleration": 0,
+                    "steering": utils.lmap(action[0], [-1, 1], self.steering_range),
+                }
+            )
         self.last_action = action
 
 
 class DiscreteAction(ContinuousAction):
-    def __init__(self,
-                 env: 'AbstractEnv',
-                 acceleration_range: Optional[Tuple[float, float]] = None,
-                 steering_range: Optional[Tuple[float, float]] = None,
-                 longitudinal: bool = True,
-                 lateral: bool = True,
-                 dynamical: bool = False,
-                 clip: bool = True,
-                 actions_per_axis: int = 3,
-                 **kwargs) -> None:
-        super().__init__(env, acceleration_range=acceleration_range, steering_range=steering_range,
-                         longitudinal=longitudinal, lateral=lateral, dynamical=dynamical, clip=clip)
+    def __init__(
+        self,
+        env: "AbstractEnv",
+        acceleration_range: Optional[Tuple[float, float]] = None,
+        steering_range: Optional[Tuple[float, float]] = None,
+        longitudinal: bool = True,
+        lateral: bool = True,
+        dynamical: bool = False,
+        clip: bool = True,
+        actions_per_axis: int = 3,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            env,
+            acceleration_range=acceleration_range,
+            steering_range=steering_range,
+            longitudinal=longitudinal,
+            lateral=lateral,
+            dynamical=dynamical,
+            clip=clip,
+        )
         self.actions_per_axis = actions_per_axis
 
     def space(self) -> spaces.Discrete:
-        return spaces.Discrete(self.actions_per_axis**self.size)
+        return spaces.Discrete(self.actions_per_axis ** self.size)
 
     def act(self, action: int) -> None:
         cont_space = super().space()
@@ -166,34 +191,22 @@ class DiscreteMetaAction(ActionType):
     An discrete action space of meta-actions: lane changes, and cruise control set-point.
     """
 
-    ACTIONS_ALL = {
-        0: 'LANE_LEFT',
-        1: 'IDLE',
-        2: 'LANE_RIGHT',
-        3: 'FASTER',
-        4: 'SLOWER'
-    }
+    ACTIONS_ALL = {0: "LANE_LEFT", 1: "IDLE", 2: "LANE_RIGHT", 3: "FASTER", 4: "SLOWER"}
     """A mapping of action indexes to labels."""
 
-    ACTIONS_LONGI = {
-        0: 'SLOWER',
-        1: 'IDLE',
-        2: 'FASTER'
-    }
+    ACTIONS_LONGI = {0: "SLOWER", 1: "IDLE", 2: "FASTER"}
     """A mapping of longitudinal action indexes to labels."""
 
-    ACTIONS_LAT = {
-        0: 'LANE_LEFT',
-        1: 'IDLE',
-        2: 'LANE_RIGHT'
-    }
+    ACTIONS_LAT = {0: "LANE_LEFT", 1: "IDLE", 2: "LANE_RIGHT"}
     """A mapping of lateral action indexes to labels."""
 
-    def __init__(self,
-                 env: 'AbstractEnv',
-                 longitudinal: bool = True,
-                 lateral: bool = True,
-                 **kwargs) -> None:
+    def __init__(
+        self,
+        env: "AbstractEnv",
+        longitudinal: bool = True,
+        lateral: bool = True,
+        **kwargs
+    ) -> None:
         """
         Create a discrete action space of meta-actions.
 
@@ -204,12 +217,19 @@ class DiscreteMetaAction(ActionType):
         super().__init__(env)
         self.longitudinal = longitudinal
         self.lateral = lateral
-        self.actions = self.ACTIONS_ALL if longitudinal and lateral \
-            else self.ACTIONS_LONGI if longitudinal \
-            else self.ACTIONS_LAT if lateral \
+        self.actions = (
+            self.ACTIONS_ALL
+            if longitudinal and lateral
+            else self.ACTIONS_LONGI
+            if longitudinal
+            else self.ACTIONS_LAT
+            if lateral
             else None
+        )
         if self.actions is None:
-            raise ValueError("At least longitudinal or lateral actions must be included")
+            raise ValueError(
+                "At least longitudinal or lateral actions must be included"
+            )
         self.actions_indexes = {v: k for k, v in self.actions.items()}
 
     def space(self) -> spaces.Space:
@@ -224,10 +244,7 @@ class DiscreteMetaAction(ActionType):
 
 
 class MultiAgentAction(ActionType):
-    def __init__(self,
-                 env: 'AbstractEnv',
-                 action_config: dict,
-                 **kwargs) -> None:
+    def __init__(self, env: "AbstractEnv", action_config: dict, **kwargs) -> None:
         super().__init__(env)
         self.action_config = action_config
         self.agents_action_types = []
@@ -237,7 +254,9 @@ class MultiAgentAction(ActionType):
             self.agents_action_types.append(action_type)
 
     def space(self) -> spaces.Space:
-        return spaces.Tuple([action_type.space() for action_type in self.agents_action_types])
+        return spaces.Tuple(
+            [action_type.space() for action_type in self.agents_action_types]
+        )
 
     @property
     def vehicle_class(self) -> Callable:
@@ -249,7 +268,7 @@ class MultiAgentAction(ActionType):
             action_type.act(agent_action)
 
 
-def action_factory(env: 'AbstractEnv', config: dict) -> ActionType:
+def action_factory(env: "AbstractEnv", config: dict) -> ActionType:
     if config["type"] == "ContinuousAction":
         return ContinuousAction(env, **config)
     if config["type"] == "DiscreteAction":
