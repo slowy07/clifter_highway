@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-the grapich require the installation of pygame, which itself has dependencies that must be install manually
+the graphic of this project require the installation of pygame, which itself has dependencies that must be install manually
 
 **ubuntu**
 ```
