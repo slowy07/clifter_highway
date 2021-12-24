@@ -1,6 +1,6 @@
 # dynamics
 
-the dynamics of every environment describe how vehicle move and behave through time. there are two important section that affect these dynamics. the description of the roads, and cvehicle pyhsics and behavioral models
+the dynamics of every environment describe how vehicle move and behave through time. there are two important section that affect these dynamics. the description of the roads, and vehicle pyhsics and behavioral models
 
 ## road
 
